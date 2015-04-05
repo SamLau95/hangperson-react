@@ -86,14 +86,14 @@ describe "HangpersonApp" do
 
       end
       it "responds with JSON reporting the new game state after a correct guess" do
-        post "/#{@game.id}/guess", :guess => 'b'
+        post "/#{@game.id}/guess", {:guess => 'b'}.to_json
         expect(JSON.parse(last_response.body)['word_with_guesses']).to eq("f--b--")
         expect(JSON.parse(last_response.body)['guesses']).to eq("fb")
         expect(JSON.parse(last_response.body)['wrong_guesses']).to eq("zy")
         expect(JSON.parse(last_response.body)['status']).to eq("play")
       end
       it "responds with JSON reporting the new game state after a wrong guess" do
-        post "/#{@game.id}/guess", :guess => "q"
+        post "/#{@game.id}/guess", {:guess => "q"}.to_json
         expect(JSON.parse(last_response.body)['word_with_guesses']).to eq("f-----")
         expect(JSON.parse(last_response.body)['guesses']).to eq("f")
         expect(JSON.parse(last_response.body)['wrong_guesses']).to eq("zyq")
@@ -107,14 +107,14 @@ describe "HangpersonApp" do
                                                      :wrong_guesses => 'qwrtyu')
       end
       it "transitions to a loss when the guess is wrong" do
-        post "/#{@game.id}/guess", :guess => "o"
+        post "/#{@game.id}/guess", {:guess => "o"}.to_json
         expect(JSON.parse(last_response.body)['word_with_guesses']).to eq("-pple")
         expect(JSON.parse(last_response.body)['guesses']).to eq("lpe")
         expect(JSON.parse(last_response.body)['wrong_guesses']).to eq("qwrtyuo")
         expect(JSON.parse(last_response.body)['status']).to eq("lose")
       end
       it "transitions to a win when the guess is right" do
-        post "/#{@game.id}/guess", :guess => "a"
+        post "/#{@game.id}/guess", {:guess => "a"}.to_json
         expect(JSON.parse(last_response.body)['word_with_guesses']).to eq("apple")
         expect(JSON.parse(last_response.body)['guesses']).to eq("lpea")
         expect(JSON.parse(last_response.body)['wrong_guesses']).to eq("qwrtyu")
@@ -123,28 +123,28 @@ describe "HangpersonApp" do
     end
     it "responds with the proper JSON when the guess is a non-letter" do
       @game = FactoryGirl.create(:hangperson_game, :word => "banana")
-      post "/#{@game.id}/guess", :guess => ';'
+      post "/#{@game.id}/guess", {:guess => ';'}.to_json
       expect(JSON.parse(last_response.body)['error']).to eq("Invalid guess: ';'")
     end
     it "responds with the proper JSON when guessing at a game that's won" do
       @game = FactoryGirl.create(:hangperson_game, :word => "banana",
                                                    :guesses => 'ban')
-      post "/#{@game.id}/guess", :guess => 't'
+      post "/#{@game.id}/guess", {:guess => 't'}.to_json
       expect(JSON.parse(last_response.body)['error']).to eq("You already won, the word was 'banana'")
     end
     it "responds with the proper JSON when guessing at a game that's lost" do
       @game = FactoryGirl.create(:hangperson_game, :word => "banana",
                                                    :wrong_guesses => 'qwertyu')
-      post "/#{@game.id}/guess", :guess => 'b'
+      post "/#{@game.id}/guess", {:guess => 'b'}.to_json
       expect(JSON.parse(last_response.body)['error']).to eq("You already lost, the word was 'banana'")
     end
     it "responds with the proper JSON when guessing a repeat letter" do
       @game = FactoryGirl.create(:hangperson_game, :word => "banana",
                                                    :guesses => 'b',
                                                    :wrong_guesses => 'q')
-      post "/#{@game.id}/guess", :guess => 'b'
+      post "/#{@game.id}/guess", {:guess => 'b'}.to_json
       expect(JSON.parse(last_response.body)['error']).to eq("You have already guessed 'b'")
-      post "/#{@game.id}/guess", :guess => 'q'
+      post "/#{@game.id}/guess", {:guess => 'q'}.to_json
       expect(JSON.parse(last_response.body)['error']).to eq("You have already guessed 'q'")
     end
   end

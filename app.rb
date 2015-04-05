@@ -19,22 +19,15 @@ class HangpersonApp < Sinatra::Base
   end
 
   post '/:id/guess' do
+    @req_data = JSON.parse(request.body.read.to_s)
     @game = HangpersonGame.find(params[:id])
-    letter = params[:guess]
-    status = @game.check_win_or_lose
-    if status != :play
-      error = "You already #{status == :win ? 'won' : 'lost'}, the word was '#{@game.word}'"
-    end
-    begin
-      if ! @game.guess(letter[0])
-        error = "You have already guessed '#{letter[0]}'"
-      end
-    rescue ArgumentError
-      error = "Invalid guess: '#{letter[0]}'"
-    end
-    if error
-      return {:error => error}.to_json
+    @status = @game.check_win_or_lose
+    @letter = @req_data['guess']
+    attempt_guess
+    if @error
+      return {:error => @error}.to_json
     else
+      @game.save
       return {:word_with_guesses => @game.word_with_guesses,
               :guesses => @game.guesses,
               :wrong_guesses => @game.wrong_guesses,
@@ -49,5 +42,24 @@ class HangpersonApp < Sinatra::Base
      :wrong_guesses => @game.wrong_guesses,
      :status => @game.check_win_or_lose}.to_json
   end
+
+  helpers do
+    def attempt_guess
+      if ! @letter
+        @error = "No guess provided"
+      elsif @status != :play
+        @error = "You already #{@status == :win ? 'won' : 'lost'}, the word was '#{@game.word}'"
+      else
+        begin
+          if ! @game.guess(@letter[0])
+            @error = "You have already guessed '#{@letter[0]}'"
+          end
+        rescue ArgumentError
+          @error = "Invalid guess: '#{@letter[0]}'"
+        end
+      end
+    end
+  end
+
 
 end
