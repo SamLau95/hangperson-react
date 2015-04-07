@@ -4,7 +4,6 @@ ruby '1.9.3'
 gem 'rake'
 gem 'sinatra', '>= 1.4'
 gem 'sinatra-activerecord'
-gem 'sqlite3'
 gem 'json'
 
 group :development, :test do
@@ -19,6 +18,11 @@ group :development, :test do
   gem 'rack-test'
   gem 'rerun'
   gem 'simplecov'
+  gem 'sqlite3'
   gem 'webmock'
   gem 'ZenTest'
+end
+
+group :production do
+  gem 'pg'
 end
