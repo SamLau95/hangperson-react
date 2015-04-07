@@ -1,6 +1,6 @@
 "use strict";
 
-var BASE_URL = "https://thawing-river-5767.herokuapp.com";
+var BASE_URL = "https://hangperson-spa.herokuapp.com";
 function game_url(game_id) {
   return "" + BASE_URL + "/" + game_id;
 }
