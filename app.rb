@@ -8,6 +8,12 @@ class HangpersonApp < Sinatra::Base
 
   register Sinatra::ActiveRecordExtension
 
+  set :public_folder, 'public'
+
+  get "/" do
+    send_file File.join(settings.public_folder, 'index.html')
+  end
+
   # TODO: Error handling (if create methods returns nil, return error)
   post '/create' do
     word = params[:word] || HangpersonGame.get_random_word
